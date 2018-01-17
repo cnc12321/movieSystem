@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://v3.bootcss.com/examples/dashboard/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://v3.bootcss.com/favicon.ico">
+
+    <title>My Space</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="http://v3.bootcss.com/examples/dashboard/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="{{ url_for('static', filename='ie-emulation-modes-warning.js') }}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">  
+          <form class="navbar-form navbar-left" role="search" method="POST" action="/search">
+            <div class="form-group">
+              <datalist id="autocomplete">
+                {%for data in movies%}
+                <option value="{{data['vname']}}">
+                {% endfor %}
+                {%for data in directors%}
+                <option value="{{data['dname']}}">
+                {% endfor %}
+                {%for data in actors%}
+                <option value="{{data['aname']}}">
+                {% endfor %}
+              </datalist>
+              <select id="select" name="select" class="form-control">
+                <option value="MOVIES">Movies</option>
+                <option value="DIRECTORS">Directors</option>
+                <option value="ACTORS">Actors</option>
+              </select>
+              <input type="text" class="form-control" placeholder="Search" name="name" id = "name", list="autocomplete">
+            </div>
+            <button type="submit" class="btn btn-default">Search videos</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+
+			<a href="#">{{session.email}}</a>
+			</li>
+			<li><a href="/logout">Logout<span class="sr-only"></span></a></li></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="/my_space">My Space &nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <form method = "post" action="/add_interest">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Email</label>
+              <div class="col-sm-10">
+                <p class="form-control-static">{{session.email}}</p>
+              </div>
+            </div>
+			<div class="form-group">
+              <label class="col-sm-2 control-label">Username</label>
+              <div class="col-sm-10">
+                <p class="form-control-static">{{session.uname}}</p>
+              </div>
+            </div>
+			<div class="form-group">
+              <label class="col-sm-2 control-label">Join Time</label>
+              <div class="col-sm-10">
+                <p class="form-control-static">{{session.jointime}}</p>
+              </div>
+            </div>
+			<div class="form-group">
+              <label class="col-sm-2 control-label">Interests</label>
+              <div class="col-sm-10">
+                <p class="form-control-static" id='interests'>
+                {% for genre in genres%}
+                  {{genre}} &nbsp;
+                {% endfor %}</p>
+              </div>
+            </div>
+			<div class="col-md-12">
+				<p>&nbsp;</p>
+				<h3>Recommended Movies</h3>
+        {% for movie in data%}
+				<div class="col-sm-6 col-md-3">
+				  <div class="thumbnail">
+					<img src="{{ url_for('static', filename='videos.jpg') }}" alt="...">
+					<a href="/videoes_Interface/{{movie.vid}}">
+					<div class="caption">
+					  <div class="center-block">
+						<div class="row" style="margin-bottom:5px;">
+							<div class="col-md-6" style="padding-top:1px;height:20px;overflow:hidden; ">
+							  <b>{{movie.vname}}</b>
+							</div>
+							<div class="col-md-2 pull-right" style="margin-right:12px;">
+                {%if movie.rate > 4.0 %}
+                  <span class="label label-success"> {{movie.rate}} </span>
+                    {%endif%}
+                    {%if movie.rate <= 4.0 and movie.rate > 2 %}
+                    <span class="label label-primary"> {{movie.rate}} </span>
+                    {%endif%}
+                    {%if movie.rate <= 2 %}
+                    <span class="label label-warning"> {{movie.rate}} </span>
+                    {%endif%}
+							</div>
+						</div>
+					  </div>
+					  <div style="height:60px;overflow:hidden;">
+					  {{movie.vdes}} <br>
+					  </div>
+					</div>
+					</a>
+				  </div>
+				</div>
+        {% endfor %}
+      </div>
+			<br>
+      <div class="form-group col-md-12">
+				<p>&nbsp;</p>
+				<h3>Wanna add more interests?</h3>
+				<div class="col-md-6">
+					<center>
+						<form role="search" method="POST" action="/add_interest">
+							<select id="select"	name="select" class="form-control">
+								{%for option in options%}
+                <option value="{{option['gname']}}">{{option['gname']}}</option>
+								{% endfor %}
+							</select>
+							<br>
+							<button type="submit" class="btn btn-default" >Add new interests</button>
+						</form>
+
+					</center>
+				</div>
+      </div>
+      <div class="form-group col-md-12">
+        <p>&nbsp;</p>
+        <h3>Wanna remove some of the interests?</h3>
+        <div class="col-md-6">
+          <center>
+            <form role="search" method="POST" action="/delete_interest">
+              <select id="select2" name="select2" class="form-control">
+                {%for genre in genres%}
+                <option value="{{genre}}">{{genre}}</option>
+                {% endfor %}
+                <option value='None'>{{genre}}</option>
+              </select>
+              <br>
+              <button type="submit" class="btn btn-default" >Delete the interest</button>
+            </form>
+
+          </center>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="{{ url_for('static', filename='holder.min.js') }}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{{ url_for('static', filename='ie10-viewport-bug-workaround.js') }}"></script>
+  
+
+</body></html>

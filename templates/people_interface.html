@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://v3.bootcss.com/favicon.ico">
+
+    <title>{{profile['name']}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://v3.bootcss.com/assets/css/docs.min.css" rel="stylesheet">
+    <!--<link href="style.css" rel="stylesheet">-->
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="{{url_for('static', filename='ie-emulation-modes-warning.js') }}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body style="padding-top:70px;">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">  
+          <form class="navbar-form navbar-left" role="search" method="POST" action="/search">
+            <div class="form-group">
+              <datalist id="autocomplete">
+                {%for data in movies%}
+                <option value="{{data['vname']}}">
+                {% endfor %}
+                {%for data in directors%}
+                <option value="{{data['dname']}}">
+                {% endfor %}
+                {%for data in actors%}
+                <option value="{{data['aname']}}">
+                {% endfor %}
+              </datalist>
+              <select id="select" name="select" class="form-control">
+                <option value="MOVIES">Movies</option>
+                <option value="DIRECTORS">Directors</option>
+                <option value="ACTORS">Actors</option>
+              </select>
+              <input type="text" class="form-control" placeholder="Search" name="name" id = "name", list="autocomplete">
+            </div>
+            <button type="submit" class="btn btn-default">Search videos</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            {% if session.logged_in %}
+      <!--<li class="active"><a href="">My Space</a></li>-->
+      <li class="active"><a href="/my_space">{{session.uname}}‘s Space</a></li>
+      <li><a href="/logout">Logout</a></li>
+      {% else %}
+      <li><a href="/login">Sign In</a></li>
+      {% endif %}
+      <!--<li><a href="login.php">Sign Up<span class="sr-only"></span></a></li>-->
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    
+    <div class="container">
+      <!-- Main component for a primary marketing message or call to action -->
+      <div >
+          <div class="media row">
+            <div style="padding-bottom:20px;"class="media-left col-md-9">
+              <a href="#">
+              <div class="col-md-9" >
+				        {%if people_status == "Actor"%}
+                    <img src="{{ url_for('static', filename='actors.jpg') }}" style="width:140%;height:540px;" alt="...">
+                {% endif %}
+                {%if people_status == "Director"%}
+                    <img src="{{ url_for('static', filename='directors.jpg') }}" style="width:140%;height:540px;" alt="...">
+                {% endif %}
+			  </div>
+			</a>
+            </div>
+            <div class=" col-md-3">
+                <div class="bs-callout bs-callout-info" id="callout-tabs-extends-component">
+                  <h4>{{people_status}} Name</h4>
+                    <font size=3>{{profile['name']}}</font><br>
+				          <h4>{{people_status}}'s Description</h4>
+                    {{profile['des']}}<br><br>
+                  {%if people_status == "Actor"%}
+  				          <h4>Cast Movies</h4>
+                      {% for product in products%}
+                      <a href="/videoes_Interface/{{product['vid']}}">{{product['vname']}}</a><br>
+                      {% endfor %}
+                  {% endif %}
+				          {%if people_status == "Director"%}
+                    <h4>Directed Movies</h4>
+                      {% for product in products%}
+                      <a href="/videoes_Interface/{{product['vid']}}">{{product['vname']}}</a><br>
+                      {% endfor %}
+                  {% endif %}
+                </div>
+            </div>
+      </div>
+     </div>
+
+      
+      
+      
+      <footer style="padding-top:100px;">
+        <p class="pull-right"><a href="">Back to top</a></p>
+        <p>© 2017 UrMovies Group   &nbsp;&nbsp;&nbsp; <a href="">Contact us</a> · <a href="">More...</a></p>
+      </footer>
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{url_for('static', filename='bootstrap.min.js') }}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{{url_for('static', filename='ie10-viewport-bug-workaround.js') }}"></script>
+  
+
+</body></html>

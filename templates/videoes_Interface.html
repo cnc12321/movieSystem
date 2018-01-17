@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://v3.bootcss.com/favicon.ico">
+
+    <title>Player</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://v3.bootcss.com/assets/css/docs.min.css" rel="stylesheet">
+    <!--<link href="style.css" rel="stylesheet">-->
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="{{url_for('static', filename='ie-emulation-modes-warning.js') }}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body style="padding-top:70px;">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">  
+          <form class="navbar-form navbar-left" role="search" method="POST" action="/search">
+            <div class="form-group">
+              <datalist id="autocomplete">
+                {%for data in movies%}
+                <option value="{{data['vname']}}">
+                {% endfor %}
+                {%for data in directors_list%}
+                <option value="{{data['dname']}}">
+                {% endfor %}
+                {%for data in actors_list%}
+                <option value="{{data['aname']}}">
+                {% endfor %}
+              </datalist>
+              <select id="select" name="select" class="form-control">
+                <option value="MOVIES">Movies</option>
+                <option value="DIRECTORS">Directors</option>
+                <option value="ACTORS">Actors</option>
+              </select>
+              <input type="text" class="form-control" placeholder="Search" name="name" id = "name", list="autocomplete">
+            </div>
+            <button type="submit" class="btn btn-default">Search videos</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            {% if session.logged_in %}
+      <!--<li class="active"><a href="">My Space</a></li>-->
+      <li class="active"><a href="/my_space">{{session.uname}}‘s Space</a></li>
+      <li><a href="/logout">Logout</a></li>
+      {% else %}
+      <li><a href="/login">Sign In</a></li>
+      {% endif %}
+      <!--<li><a href="login.php">Sign Up<span class="sr-only"></span></a></li>-->
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    
+    <div class="container">
+      <!-- Main component for a primary marketing message or call to action -->
+      <div >
+          <div class="media row">
+            <div style="padding-bottom:20px;"class="media-left col-md-9">
+              <a href="#">
+              <div class="col-md-9" >
+				<img src="{{url_for('static', filename='videos.jpg') }}" style="width:140%;height:540px;" alt="...">
+			  </div>
+			</a>
+            </div>
+            <div class=" col-md-3">
+                <div class="bs-callout bs-callout-info" id="callout-tabs-extends-component">
+                  <h4>Video Name</h4>
+                  <font size=3>{{result['vname']}}</font><br>
+				  <h4>Video Rating</h4>
+                  {{result['rate']}}<br><br>
+				  <h4>Director</h4>
+                  {% for director in directors%}
+                  <a href="/people_interface/Director-{{director['did']}}">{{director['dname']}}</a><br>
+                  {% endfor %}
+				  <h4>Actor/Actress</h4>
+                  {% for actor in actors%}
+                  <a href="/people_interface/Actor-{{actor['aid']}}">{{actor['aname']}}</a><br>
+                  {% endfor %}
+				  <h4>Description</h4>
+                  {{result['vdes']}}<br>
+                </div>
+            </div>
+      </div>
+     </div>
+
+     <!-- the discussion area-->
+      <div class="">
+      <div class="row">
+        <div class="col-md-10">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">&nbsp;&nbsp;&nbsp;&nbsp;Comments&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+            <li role="presentation"><a href="#rating" aria-controls="profile" role="tab" data-toggle="tab">Rate the video</a></li>
+          </ul>
+        </div>
+      </div>
+        
+      
+      <div class="row">
+        <!-- Tab panes -->
+        <div class="tab-content col-md-10">
+          <div role="tabpanel" class="tab-pane active" id="home">
+            <div class="row" style="margin:7px 0px">
+                <form method="POST" action="/add_comment">
+                <textarea style="margin:7px 0px"class="form-control" rows="5" placeholder="Say something about this video~" name="commet"></textarea>
+                <input type="hidden" value="{{video_id}}" name="vid" />
+              <button type="submit" class="btn btn-primary pull-left" >Submit your comment</button>
+                </form>
+            </div>
+
+            <br>
+            {% if len > 0 %}
+              {%for review in reviews%}
+              <div class="row">
+                  <div class="col-md-2"><img src="text.svg" alt="No photo available" class="img-thumbnail" style="height:100px;width:100px;"></div>
+                  <div class="col-md-10" style="margin-left:-50px;">
+                    <strong>Username: {{review.uname}} &nbsp;&nbsp;&nbsp;&nbsp; Time: {{review.rtime}}</strong><br>
+                    <div class="bs-callout bs-callout-info">
+                      <p>{{review.comments}}</p>
+                    </div>
+                  </div>
+              </div>
+              {%endfor%}
+            {%endif%}
+            <div class="row">
+              
+            </div>
+            <ul class="pagination">
+                  <li>
+                    <a href="#" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  <li class="active"><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li>
+                    <a href="#" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+              </ul>
+          </div>
+
+          <div role="tabpanel" class="tab-pane" id="rating">
+            <form method="POST" action="/add_rate">
+      			<div>
+            {%if rating is none%}
+      			<h2>Please rate the video:</h2>
+            {%else%}
+            <h2>Your rating for this movie: {{rating}}</h2>
+            {%endif%}
+            <script>
+              var new_rate = 0
+            </script>
+            
+            <input type="hidden" value="{{video_id}}" name="vid"/>
+            <input type="hidden" value="{{rating}}" name="previous_rating"/>
+  
+      			<br>
+      				<input type="button" value="5" name="new_rate" class="btn btn-success" onclick="changerate(5)"></input>
+      				<input type="button" value="4" name="new_rate" class="btn btn-primary" onclick="changerate(4)"></input>
+      				<input type="button" value="3" name="new_rate" class="btn btn-info" onclick="changerate(3)"></input>
+      				<input type="button" value="2" name="new_rate" class="btn btn-warning" onclick="changerate(2)"></input>
+      				<input type="button" value="1" name="new_rate" class="btn btn-danger" onclick="changerate(1)"></input>
+      			</div>
+      			<br>
+            <script>
+              function changerate(rating) {
+                  document.getElementById("rating_input").value = rating;
+              }
+            </script>
+            <input type="hidden" value= new_rate name="rating" id="rating_input"/>
+      			<button type="submit" class="btn btn-default pull-left" >Submit your rate</button>
+			     </form>
+
+          </div>
+        </div>
+      </div>
+      
+      <footer style="padding-top:100px;">
+        <p class="pull-right"><a href="">Back to top</a></p>
+        <p>© 2017 UrMovies Group   &nbsp;&nbsp;&nbsp; <a href="">Contact us</a> · <a href="">More...</a></p>
+      </footer>
+</div> <!-- /container -->
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{url_for('static', filename='bootstrap.min.js') }}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{{url_for('static', filename='ie10-viewport-bug-workaround.js') }}"></script>
+  
+
+</body></html>

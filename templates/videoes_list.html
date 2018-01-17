@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://v3.bootcss.com/favicon.ico">
+
+    <title>Videos List</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="http://v3.bootcss.com/examples/dashboard/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="{{ url_for('static', filename='ie-emulation-modes-warning.js') }}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">  
+          <form class="navbar-form navbar-left" role="search" method="POST" action="/search">
+            <div class="form-group">
+             <datalist id="autocomplete">
+                {%for data in movies%}
+                <option value="{{data['vname']}}">
+                {% endfor %}
+                {%for data in directors%}
+                <option value="{{data['dname']}}">
+                {% endfor %}
+                {%for data in actors%}
+                <option value="{{data['aname']}}">
+                {% endfor %}
+              </datalist>
+              <select id="select" name="select" class="form-control">
+                <option value="MOVIES">Movies</option>
+                <option value="DIRECTORS">Directors</option>
+                <option value="ACTORS">Actors</option>
+              </select>
+              <input type="text" class="form-control" placeholder="Search" name="name" id = "name", list="autocomplete">
+            </div>
+            <button type="submit" class="btn btn-default">Search videos</button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            {% if session.logged_in %}
+      <!--<li class="active"><a href="">My Space</a></li>-->
+      <li class="active"><a href="/my_space">{{session.uname}}‘s Space</a></li>
+      <li><a href="/logout">Logout</a></li>
+      {% else %}
+      <li><a href="/login">Sign In</a></li>
+      {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="/videoes_list">All videos &nbsp;&nbsp; <span class="glyphicon glyphicon-film" aria-hidden="true"></span></span></a></li>
+            <li class="active"><a href="/videoes_list/popular">Popular &nbsp;&nbsp; <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></span></a></li>
+          </ul>
+        <h3>Category</h3>
+          <ul class="nav nav-sidebar">
+            <!--NEED TO CHANGE THE GENRES INTO QUERYABLE-->
+            <li ><a href="/videoes_list/action">Action</a></li>
+            <li ><a href="/videoes_list/adventure">Adventure</a></li>
+            <li ><a href="/videoes_list/animation">Animation</a></li>
+            <li ><a href="/videoes_list/comedy">Comedy</a></li>
+            <li ><a href="/videoes_list/disaster">Disaster</a></li>
+            <li ><a href="/videoes_list/drama">Drama</a></li>
+            <li ><a href="/videoes_list/epic">Epic</a></li>
+            <li ><a href="/videoes_list/family">Family</a></li>
+            <li ><a href="/videoes_list/fantasy">Fantasy</a></li>
+            <li ><a href="/videoes_list/historical">Historical</a></li>
+            <li ><a href="/videoes_list/romance">Romance</a></li>
+            <li ><a href="/videoes_list/sci-fi">Sci-fi</a></li>
+            <li ><a href="/videoes_list/war">War</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <div class="row">
+            <!--1-->
+            {% for n in data %}
+            <div class="col-sm-6 col-md-3">
+              <div class="thumbnail">
+                <img src="{{ url_for('static', filename='videos.jpg') }}", alt="...">
+                {% if session.logged_in%}
+                <a href="/videoes_Interface/{{n[0]}}">
+                {% else %}
+                <a href="/login">
+                {% endif %}
+                <div class="caption">
+                  <div class="center-block">
+                    <div class="row" style="margin-bottom:5px;">
+                        <div class="col-md-6" style="padding-top:1px;height:20px;overflow:hidden;">
+                          <b>{{n[1]}} </b>
+                        </div>
+                        <div class="col-md-2 pull-right" style="margin-right:12px;">
+                          {%if n[2] > 4.0 %}
+                          <span class="label label-success"> {{n[2]}} </span>
+                          {%endif%}
+                          {%if n[2] <= 4.0 and n[2] > 2 %}
+                          <span class="label label-primary"> {{n[2]}} </span>
+                          {%endif%}
+                          {%if n[2] <= 2 %}
+                          <span class="label label-warning"> {{n[2]}} </span>
+                          {%endif%}
+                        </div>
+                    </div>
+                  </div>
+                  <div style="height:60px;overflow:hidden;">
+                  {{n[3]}}<br>
+                  </div>
+                </div>
+                </a >
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="{{ url_for('static', filename='holder.min.js') }}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{{ url_for('static', filename='ie10-viewport-bug-workaround.js') }}"></script>
+  
+
+</body></html>
